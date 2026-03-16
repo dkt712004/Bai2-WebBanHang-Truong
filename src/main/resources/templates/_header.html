@@ -1,0 +1,6 @@
+<div class="header-container" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+    <div class="site-name">Dkt Online Shop</div>
+    <div style="float:right" sec:authorize="isAuthenticated()">
+        Hello, <span sec:authentication="name"></span> | <a th:href="@{/admin/logout}" style="color:yellow">Logout</a>
+    </div>
+</div>
