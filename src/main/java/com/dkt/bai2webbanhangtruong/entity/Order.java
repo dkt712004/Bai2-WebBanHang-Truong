@@ -1,4 +1,25 @@
 package com.dkt.bai2webbanhangtruong.entity;
 
-public class Order {
+import jakarta.persistence.*;
+import lombok.*;
+import java.util.Date;
+
+@Entity
+@Table(name = "Orders")
+@Getter @Setter @NoArgsConstructor
+public class Order extends BaseEntity {
+    @Column(name = "Order_Date", nullable = false)
+    private Date orderDate;
+
+    @Column(name = "Order_Num", nullable = false)
+    private int orderNum;
+
+    @Column(name = "Amount", nullable = false)
+    private double amount;
+
+    // Thông tin khách hàng lưu trực tiếp
+    private String customerName;
+    private String customerAddress;
+    private String customerEmail;
+    private String customerPhone;
 }

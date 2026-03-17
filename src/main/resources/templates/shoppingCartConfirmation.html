@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Xác nhận đơn hàng - Dkt Shop</title>
+    <!-- Sửa lỗi: Đảm bảo có dấu } ở cuối biểu thức @{...} -->
+    <link rel="stylesheet" type="text/css" th:href="@{/styles.css}">
+</head>
+<body>
+<th:block th:replace="~{_header}"></th:block>
+<th:block th:replace="~{_menu}"></th:block>
+
+<div class="page-title">Xác nhận đặt hàng</div>
+
+<div class="container" style="background: white; padding: 20px; border: 1px solid #ccc;">
+    <h3>Danh sách sản phẩm trong đơn hàng:</h3>
+
+    <table style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
+        <thead>
+        <tr style="background: #f2f2f2;">
+            <th style="border: 1px solid #ddd; padding: 8px;">Sản phẩm</th>
+            <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Số lượng</th>
+            <th style="border: 1px solid #ddd; padding: 8px; text-align: right;">Đơn giá</th>
+            <th style="border: 1px solid #ddd; padding: 8px; text-align: right;">Thành tiền</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="line : ${myCart.cartLines}">
+            <td style="border: 1px solid #ddd; padding: 8px;">
+                <span th:text="${line.productInfo.name}"></span>
+            </td>
+            <td style="border: 1px solid #ddd; padding: 8px; text-align: center;" th:text="${line.quantity}"></td>
+            <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                <span th:text="${#numbers.formatDecimal(line.productInfo.price, 1, 0, 'COMMA')}"></span>
+            </td>
+            <td style="border: 1px solid #ddd; padding: 8px; text-align: right; font-weight: bold;">
+                <span th:text="${#numbers.formatDecimal(line.amount, 1, 0, 'COMMA')}"></span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div style="text-align: right; font-size: 1.2em;">
+        Tổng thanh toán: <b style="color: red;">
+        <span th:text="${#numbers.formatDecimal(myCart.amountTotal, 1, 0, 'COMMA')}"></span> VNĐ
+    </b>
+    </div>
+
+    <hr/>
+
+    <div style="margin-top: 20px;">
+        <form method="POST" th:action="@{/shoppingCartConfirmation}">
+            <!-- Nút xác nhận để lưu vào database qua OrderDAO.saveOrder -->
+            <input type="submit" value="XÁC NHẬN ĐẶT HÀNG"
+                   style="background: #28a745; color: white; border: none; padding: 10px 30px; cursor: pointer; font-weight: bold;" />
+
+            <a th:href="@{/shoppingCart}" style="margin-left: 15px; color: #666;">Quay lại sửa giỏ hàng</a>
+        </form>
+    </div>
+</div>
+
+<th:block th:replace="~{_footer}"></th:block>
+</body>
+</html>

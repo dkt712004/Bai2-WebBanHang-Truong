@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Thông tin tài khoản - Dkt Shop</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/styles.css}">
+</head>
+<body>
+<!-- Sửa cảnh báo fragment bằng cú pháp ~{...} và xóa dấu / -->
+<th:block th:replace="~{_header}"></th:block>
+<th:block th:replace="~{_menu}"></th:block>
+
+<div class="page-title">Thông tin tài khoản</div>
+
+<div class="container" style="background: white; padding: 20px; border: 1px solid #ccc;">
+    <ul>
+        <!-- Dùng trực tiếp đối tượng userDetails đã truyền từ Controller -->
+        <li><strong>Tên đăng nhập:</strong> <span th:text="${userDetails.username}"></span></li>
+
+        <li><strong>Trạng thái:</strong>
+            <span th:text="${userDetails.enabled} ? 'Đang hoạt động' : 'Bị khóa'"
+                  th:style="${userDetails.enabled} ? 'color:green' : 'color:red'"></span>
+        </li>
+
+        <li><strong>Quyền hạn (Roles):</strong>
+            <ul>
+                <li th:each="auth : ${userDetails.authorities}" th:text="${auth.authority}"></li>
+            </ul>
+        </li>
+    </ul>
+    <br/>
+    <a th:href="@{/admin/logout}" style="color: red;">Đăng xuất</a>
+</div>
+
+<th:block th:replace="~{_footer}"></th:block>
+</body>
+</html>

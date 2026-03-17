@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Home - Dkt Shop</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/styles.css}">
+</head>
+<body>
+<th:block th:insert="~{_header}"></th:block>
+<th:block th:replace="~{_menu}"></th:block>
+<div class="page-title">Chào mừng đến với Dkt Online Shop</div>
+<div style="padding: 20px">
+    <h3>Demo Nội dung:</h3>
+    <ul>
+        <li>Mua hàng trực tuyến</li>
+        <li>Quản lý sản phẩm (Dành cho Manager)</li>
+        <li>Quản lý đơn hàng (Dành cho Admin/Staff)</li>
+    </ul>
+</div>
+<th:block th:replace="~{_footer}"></th:block>
+</body>
+</html>

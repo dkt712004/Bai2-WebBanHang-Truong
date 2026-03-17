@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng nhập - Dkt Shop</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/styles.css}">
+</head>
+<body>
+<th:block th:insert="~{_header}"></th:block>
+<th:block th:replace="~{_menu}"></th:block>
+<div class="page-title">Đăng nhập hệ thống</div>
+<div style="padding: 20px; background: white; border: 1px solid #ccc; width: 300px; margin: 0 auto;">
+    <div th:if="${param.error}" class="error-message">Sai tài khoản hoặc mật khẩu!</div>
+    <form method="POST" th:action="@{/j_spring_security_check}">
+        Tên đăng nhập: <br/>
+        <input name="userName" type="text" style="width: 100%" /><br/><br/>
+        Mật khẩu: <br/>
+        <input name="password" type="password" style="width: 100%" /><br/><br/>
+        <input type="submit" value="Đăng nhập" />
+    </form>
+</div>
+<th:block th:replace="~{_footer}"></th:block>
+</body>
+</html>

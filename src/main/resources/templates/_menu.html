@@ -1,0 +1,8 @@
+<div class="menu-container" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+    <a th:href="@{/}">Home</a>
+    <a th:href="@{/productList}">Product List</a>
+    <a th:href="@{/shoppingCart}">My Cart</a>
+    <a th:href="@{/admin/orderList}" sec:authorize="hasAnyRole('ROLE_MANAGER','ROLE_EMPLOYEE')">Order List</a>
+    <a th:href="@{/admin/product}" sec:authorize="hasRole('ROLE_MANAGER')">Create Product</a>
+    <a th:href="@{/admin/login}" sec:authorize="!isAuthenticated()">Login</a>
+</div>

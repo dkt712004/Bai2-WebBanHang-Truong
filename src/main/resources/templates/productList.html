@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <meta charset="UTF-8">
+    <title>Sản phẩm - Dkt Shop</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/styles.css}">
+</head>
+<body>
+<th:block th:insert="~{_header}"></th:block>
+<th:block th:replace="~{_menu}"></th:block>
+<div class="page-title">Danh sách sản phẩm</div>
+
+<div class="product-preview-container" th:each="prodInfo : ${paginationProducts.list}">
+    <ul>
+        <li><img class="product-image" th:src="@{|/productImage?code=${prodInfo.code}|}" /></li>
+        <li>Code: <span th:utext="${prodInfo.code}"></span></li>
+        <li>Name: <span th:utext="${prodInfo.name}"></span></li>
+        <li>Price: <span th:utext="${#numbers.formatDecimal(prodInfo.price,3,0,'COMMA')}"></span> VNĐ</li>
+        <li><a th:href="@{|/buyProduct?code=${prodInfo.code}|}">Mua ngay</a></li>
+        <li sec:authorize="hasRole('ROLE_MANAGER')">
+            <a style="color:red" th:href="@{|/admin/product?code=${prodInfo.code}|}">Sửa sản phẩm</a>
+        </li>
+    </ul>
+</div>
+
+<br/>
+<div class="menu-container" th:if="${paginationProducts.totalPages > 1}">
+    <th:block th:each="page : ${paginationProducts.navigationPages}">
+        <a th:href="@{|/productList?page=${page}|}" th:if="${page != -1}" th:utext="${page}"></a>
+        <span th:if="${page == -1}"> ... </span>
+    </th:block>
+</div>
+
+<th:block th:replace="~{_footer}"></th:block>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Truy cập bị từ chối - Dkt Shop</title>
+    <!-- Kiểm tra kỹ dấu đóng } ở dòng dưới đây -->
+    <link rel="stylesheet" type="text/css" th:href="@{/styles.css}">
+</head>
+<body>
+<th:block th:replace="~{_header}"></th:block>
+<th:block th:replace="~{_menu}"></th:block>
+
+<div class="page-title" style="color:red; text-align:center;">
+    <h1>403 - TRUY CẬP BỊ TỪ CHỐI</h1>
+</div>
+
+<div class="container" style="text-align:center; padding: 50px;">
+    <h3>Rất tiếc! Bạn không có quyền truy cập vào trang này.</h3>
+    <p>Vui lòng đăng nhập với tài khoản có quyền cao hơn hoặc quay về trang chủ.</p>
+    <br/>
+    <a th:href="@{/}" style="color: blue; text-decoration: underline;">Quay lại Trang chủ</a>
+</div>
+
+<th:block th:replace="~{_footer}"></th:block>
+</body>
+</html>
