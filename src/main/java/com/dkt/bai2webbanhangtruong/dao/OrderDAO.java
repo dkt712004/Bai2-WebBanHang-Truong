@@ -49,7 +49,6 @@ public class OrderDAO {
             order.setCustomerAddress(cust.getAddress());
         }
 
-        // Lưu Order để lấy ID tự tăng (hàm save có sẵn trong JpaRepository)
         order = orderRepository.save(order);
         order.setOrderNum(order.getId().intValue());
         orderRepository.save(order);

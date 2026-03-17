@@ -23,7 +23,6 @@ public class MainController {
     private final OrderDAO orderDAO;
     private final ProductDAO productDAO;
 
-    // Sử dụng Constructor Injection để xóa cảnh báo "Field injection is not recommended"
     public MainController(OrderDAO orderDAO, ProductDAO productDAO) {
         this.orderDAO = orderDAO;
         this.productDAO = productDAO;
@@ -90,7 +89,6 @@ public class MainController {
         return "redirect:/shoppingCart";
     }
 
-    // Đã lược bỏ bước nhập thông tin khách hàng (shoppingCartCustomer) theo yêu cầu
 
     @RequestMapping(value = { "/shoppingCartConfirmation" }, method = RequestMethod.GET)
     public String shoppingCartConfirmationReview(HttpServletRequest request, Model model) {

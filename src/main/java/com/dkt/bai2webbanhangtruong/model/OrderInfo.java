@@ -18,7 +18,6 @@ public class OrderInfo {
         this.customerName = customerName; this.customerAddress = customerAddress;
         this.customerEmail = customerEmail; this.customerPhone = customerPhone;
     }
-    // Getter & Setter cho tất cả các trường trên
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
     public Date getOrderDate() { return orderDate; }

@@ -24,7 +24,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException("User " + username + " was not found in the database");
         }
 
-        // Vai trò (ROLE_MANAGER, ROLE_EMPLOYEE)
         String role = account.getUserRole();
         List<GrantedAuthority> grantList = new ArrayList<>();
         grantList.add(new SimpleGrantedAuthority(role));

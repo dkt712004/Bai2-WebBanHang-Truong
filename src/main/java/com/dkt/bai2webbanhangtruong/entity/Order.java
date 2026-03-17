@@ -17,7 +17,6 @@ public class Order extends BaseEntity {
     @Column(name = "Amount", nullable = false)
     private double amount;
 
-    // Thông tin khách hàng lưu trực tiếp
     private String customerName;
     private String customerAddress;
     private String customerEmail;

@@ -15,7 +15,6 @@ public class ProductForm {
         this.name = product.getName();
         this.price = product.getPrice();
     }
-    // Getter & Setter
     public String getCode() { return code; }
     public void setCode(String code) { this.code = code; }
     public String getName() { return name; }

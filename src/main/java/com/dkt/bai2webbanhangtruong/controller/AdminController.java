@@ -27,7 +27,6 @@ public class AdminController {
     private final ProductDAO productDAO;
     private final ProductFormValidator productFormValidator;
 
-    // Constructor Injection: Cách làm chuẩn để Spring tiêm các Bean vào
     public AdminController(OrderDAO orderDAO,
                            ProductDAO productDAO,
                            ProductFormValidator productFormValidator) {
@@ -36,7 +35,6 @@ public class AdminController {
         this.productFormValidator = productFormValidator;
     }
 
-    // Kết nối bộ kiểm tra dữ liệu cho Form sản phẩm
     @InitBinder
     public void myInitBinder(WebDataBinder dataBinder) {
         Object target = dataBinder.getTarget();
@@ -46,13 +44,11 @@ public class AdminController {
         }
     }
 
-    // [GET] Hiển thị trang Đăng nhập
     @RequestMapping(value = { "/admin/login" }, method = RequestMethod.GET)
     public String login(Model model) {
         return "login";
     }
 
-    // [GET] Hiển thị thông tin tài khoản sau khi đăng nhập thành công
     @RequestMapping(value = { "/admin/accountInfo" }, method = RequestMethod.GET)
     public String accountInfo(Model model) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -60,7 +56,6 @@ public class AdminController {
         return "accountInfo";
     }
 
-    // [GET] Hiển thị danh sách đơn hàng (có phân trang)
     @RequestMapping(value = { "/admin/orderList" }, method = RequestMethod.GET)
     public String orderList(Model model,
                             @RequestParam(value = "page", defaultValue = "1") int page) {
@@ -72,7 +67,6 @@ public class AdminController {
         return "orderList";
     }
 
-    // [GET] Hiển thị chi tiết một đơn hàng
     @RequestMapping(value = { "/admin/order" }, method = RequestMethod.GET)
     public String orderView(Model model, @RequestParam("orderId") Long orderId) {
         OrderInfo orderInfo = orderDAO.getOrderInfo(orderId);
@@ -85,7 +79,6 @@ public class AdminController {
         return "order";
     }
 
-    // [GET] Hiển thị form Thêm mới hoặc Sửa sản phẩm
     @RequestMapping(value = { "/admin/product" }, method = RequestMethod.GET)
     public String product(Model model, @RequestParam(value = "code", defaultValue = "") String code) {
         ProductForm productForm = null;
@@ -104,7 +97,6 @@ public class AdminController {
         return "product";
     }
 
-    // [POST] Xử lý lưu sản phẩm vào Database
     @RequestMapping(value = { "/admin/product" }, method = RequestMethod.POST)
     public String productSave(Model model,
                               @ModelAttribute("productForm") @Validated ProductForm productForm,

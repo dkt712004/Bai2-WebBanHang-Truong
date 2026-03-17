@@ -7,8 +7,7 @@ import java.util.List;
 @Repository
 public interface OrderDetailRepository extends BaseRepository<OrderDetail, Long> {
 
-    // Thêm dòng này để Spring Data JPA tự động tạo query:
-    // SELECT * FROM Order_Details WHERE ORDER_ID = ?
+
     List<OrderDetail> findByOrderId(Long orderId);
 
 }

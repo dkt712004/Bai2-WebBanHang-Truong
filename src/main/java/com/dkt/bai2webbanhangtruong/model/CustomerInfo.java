@@ -16,7 +16,6 @@ public class CustomerInfo {
         this.phone = customerForm.getPhone();
         this.valid = customerForm.isValid();
     }
-    // Getter & Setter
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     public String getAddress() { return address; }

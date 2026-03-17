@@ -18,7 +18,6 @@ public class CustomerForm {
             this.valid = customerInfo.isValid();
         }
     }
-    // Getter & Setter (Tương tự CustomerInfo)
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     public String getAddress() { return address; }

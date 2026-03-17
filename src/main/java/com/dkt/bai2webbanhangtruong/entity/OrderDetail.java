@@ -9,10 +9,10 @@ import lombok.*;
 public class OrderDetail extends BaseEntity {
 
     @Column(name = "ORDER_ID", nullable = false)
-    private Long orderId; // Chỉ lưu ID của Order
+    private Long orderId;
 
     @Column(name = "PRODUCT_ID", nullable = false)
-    private Long productId; // Chỉ lưu ID của Product
+    private Long productId;
 
     @Column(name = "Quanity", nullable = false)
     private int quanity;

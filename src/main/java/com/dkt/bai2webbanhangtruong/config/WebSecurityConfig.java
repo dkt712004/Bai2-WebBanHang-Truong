@@ -23,26 +23,17 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // Vô hiệu hóa CSRF
         http.csrf(csrf -> csrf.disable());
 
-        // Cấu hình phân quyền (Authorize Requests)
         http.authorizeHttpRequests(auth -> auth
-                // Các trang yêu cầu vai trò EMPLOYEE hoặc MANAGER
                 .requestMatchers("/admin/orderList", "/admin/order", "/admin/accountInfo")
                 .hasAnyRole("EMPLOYEE", "MANAGER")
-
-                // Trang yêu cầu vai trò MANAGER
                 .requestMatchers("/admin/product").hasRole("MANAGER")
-
-                // Tất cả các trang còn lại cho phép truy cập tự do
                 .anyRequest().permitAll()
         );
 
-        // Cấu hình trang lỗi khi không có quyền truy cập
         http.exceptionHandling(ex -> ex.accessDeniedPage("/403"));
 
-        // Cấu hình trang Đăng nhập (Login)
         http.formLogin(form -> form
                 .loginProcessingUrl("/j_spring_security_check")
                 .loginPage("/admin/login")
@@ -52,7 +43,6 @@ public class WebSecurityConfig {
                 .passwordParameter("password")
         );
 
-        // Cấu hình Đăng xuất (Logout)
         http.logout(logout -> logout
                 .logoutUrl("/admin/logout")
                 .logoutSuccessUrl("/")

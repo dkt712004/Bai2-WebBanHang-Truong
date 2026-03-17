@@ -53,7 +53,6 @@ public class ProductDAO {
             resultPage = productRepository.findAll(pageable);
         }
 
-        // Chuyển đổi sang ProductInfo để hiển thị ra View
         Page<ProductInfo> infoPage = resultPage.map(p -> new ProductInfo(p.getCode(), p.getName(), p.getPrice()));
         return new PaginationResult<>(infoPage, maxNavigationPage);
     }

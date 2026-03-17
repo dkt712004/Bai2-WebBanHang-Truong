@@ -17,10 +17,9 @@ public class PaginationResult<E> {
     private int maxNavigationPage;
     private List<Integer> navigationPages;
 
-    // --- Constructor cho Phase 2: Dùng với Spring Data JPA (Page object) ---
     public PaginationResult(Page<E> page, int maxNavigationPage) {
         this.totalRecords = (int) page.getTotalElements();
-        this.currentPage = page.getNumber() + 1; // Page trong Spring bắt đầu từ 0
+        this.currentPage = page.getNumber() + 1;
         this.list = page.getContent();
         this.maxResult = page.getSize();
         this.totalPages = page.getTotalPages();
@@ -28,19 +27,16 @@ public class PaginationResult<E> {
         this.calcNavigationPages();
     }
 
-    // --- Constructor cho Phase 1: Dùng với Hibernate Query cũ ---
     @SuppressWarnings({"deprecation", "removal"})
     public PaginationResult(Query<E> query, int page, int maxResult, int maxNavigationPage) {
         final int pageIndex = Math.max(page - 1, 0);
         int fromRecordIndex = pageIndex * maxResult;
 
         try (ScrollableResults<E> resultScroll = query.scroll(ScrollMode.SCROLL_INSENSITIVE)) {
-            // Lấy tổng số bản ghi
             resultScroll.last();
             int rowCount = resultScroll.getRowNumber();
             this.totalRecords = rowCount >= 0 ? rowCount + 1 : 0;
 
-            // Di chuyển con trỏ để lấy dữ liệu trang hiện tại
             resultScroll.beforeFirst();
             for (int i = 0; i < fromRecordIndex; i++) {
                 if (!resultScroll.next()) break;
@@ -65,7 +61,6 @@ public class PaginationResult<E> {
         this.calcNavigationPages();
     }
 
-    // Hàm tính toán danh sách các số trang hiển thị (ví dụ: 1, 2, 3, ..., 10)
     private void calcNavigationPages() {
         this.navigationPages = new ArrayList<>();
         int current = Math.min(this.currentPage, this.totalPages);
@@ -74,10 +69,9 @@ public class PaginationResult<E> {
         int begin = current - this.maxNavigationPage / 2;
         int end = current + this.maxNavigationPage / 2;
 
-        // Trang đầu tiên
         navigationPages.add(1);
         if (begin > 2) {
-            navigationPages.add(-1); // Đại diện cho "..."
+            navigationPages.add(-1);
         }
 
         for (int i = begin; i <= end; i++) {
@@ -86,12 +80,10 @@ public class PaginationResult<E> {
             }
         }
 
-        // Dấu ba chấm cuối
         if (end < this.totalPages - 1) {
             navigationPages.add(-1);
         }
 
-        // Trang cuối cùng
         if (this.totalPages > 1) {
             navigationPages.add(this.totalPages);
         }
