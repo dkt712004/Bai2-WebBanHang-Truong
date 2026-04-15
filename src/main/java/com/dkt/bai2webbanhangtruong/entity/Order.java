@@ -17,6 +17,12 @@ public class Order extends BaseEntity {
     @Column(name = "Amount", nullable = false)
     private double amount;
 
+    @Column(name = "User_Name", length = 20)
+    private String userName;
+
+    @Column(name = "Status", length = 20, nullable = false)
+    private String status;
+
     private String customerName;
     private String customerAddress;
     private String customerEmail;

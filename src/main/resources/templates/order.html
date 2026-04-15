@@ -1,72 +1,99 @@
 <!DOCTYPE html>
-<html xmlns:th=
-              "http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="vi">
 <head>
-    <meta charset=
-                  "UTF-8">
-    <title>Product List</title>
-    <link rel=
-                  "stylesheet" type=
-                  "text/css" th:href=
-                  </head>
+    <meta charset="UTF-8">
+    <title>Chi tiết đơn hàng - Dkt Shop</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/styles.css}">
+</head>
 <body>
-<th:block th:insert=
-                  "/_header"></th:block>
-<th:block th:insert=
-                  "/_menu"></th:block>
-"@{/styles.css}">
-<div class=
-             "page-title">Order Info</div>
-<div class=
-             "customer-info-container">
-    <h3>Customer Information:</h3>
-    <ul>
-        <li>Name: <span th:utext=
-                                "${orderInfo.customerName}"></span></li>
-        <li>Email: <span th:utext=
-                                 "${orderInfo.customerEmail}"></span></li>
-        <li>Phone: <span th:utext=
-                                 "${orderInfo.customerPhone}"></span></li>
-        <li>Address: <span th:utext=
-                                   "${orderInfo.customerAddress}"></span></li>
-    </ul>
-    <h3>Order Summary:</h3>
-    <ul>
-        <li>T otal:
-            <span class=
-                          "total" th:utext=
-                          "${#numbers.formatDecimal(orderInfo.amount,3,2,
-'COMMA')}">
-</span>
-        </li>
-    </ul>
+<!-- Nhúng Header và Menu -->
+<th:block th:replace="~{_header}"></th:block>
+<th:block th:replace="~{_menu}"></th:block>
+
+<div class="page-title">Chi tiết đơn hàng</div>
+
+<div class="container" style="background: white; padding: 20px; border: 1px solid #ccc;">
+    <!-- 1. THÔNG TIN KHÁCH HÀNG -->
+    <div class="customer-info-container">
+        <h3>Thông tin khách hàng:</h3>
+        <ul>
+            <li><strong>Tên khách hàng:</strong> <span th:text="${orderInfo.customerName}"></span></li>
+            <li><strong>Email:</strong> <span th:text="${orderInfo.customerEmail}"></span></li>
+            <li><strong>Số điện thoại:</strong> <span th:text="${orderInfo.customerPhone}"></span></li>
+            <li><strong>Địa chỉ giao hàng:</strong> <span th:text="${orderInfo.customerAddress}"></span></li>
+        </ul>
+        <p style="font-size: 1.1em;"><strong>Tổng thanh toán: </strong>
+            <b style="color:red" th:text="${#numbers.formatDecimal(orderInfo.amount, 1, 2, 'COMMA')}"></b> VNĐ
+        </p>
+    </div>
+
+    <br/>
+
+    <!-- 2. DANH SÁCH SẢN PHẨM TRONG ĐƠN -->
+    <table style="width:100%; border-collapse: collapse; border: 1px solid #ccc;">
+        <thead>
+        <tr style="background: #efefef;">
+            <th style="border: 1px solid #ccc; padding: 8px;">Mã SP</th>
+            <th style="border: 1px solid #ccc; padding: 8px;">Tên sản phẩm</th>
+            <th style="border: 1px solid #ccc; padding: 8px; text-align: center;">Số lượng</th>
+            <th style="border: 1px solid #ccc; padding: 8px; text-align: right;">Đơn giá</th>
+            <th style="border: 1px solid #ccc; padding: 8px; text-align: right;">Thành tiền</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="detail : ${orderInfo.details}">
+            <td style="border: 1px solid #ccc; padding: 8px;" th:text="${detail.productCode}"></td>
+            <td style="border: 1px solid #ccc; padding: 8px;" th:text="${detail.productName}"></td>
+            <td style="border: 1px solid #ccc; padding: 8px; text-align: center;" th:text="${detail.quanity}"></td>
+            <td style="border: 1px solid #ccc; padding: 8px; text-align: right;"
+                th:text="${#numbers.formatDecimal(detail.price, 1, 2, 'COMMA')}"></td>
+            <td style="border: 1px solid #ccc; padding: 8px; text-align: right; font-weight: bold;"
+                th:text="${#numbers.formatDecimal(detail.amount, 1, 2, 'COMMA')}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- 3. PHẦN QUẢN LÝ TRẠNG THÁI ĐƠN HÀNG -->
+    <div style="margin-top: 20px; padding: 15px; border: 1px solid #ccc; background: #f9f9f9;">
+
+        <!-- TRƯỜNG HỢP 1: Dành cho MANAGER (Được phép sửa) -->
+        <div sec:authorize="hasRole('ROLE_MANAGER')">
+            <form th:action="@{/admin/order/updateStatus}" method="POST">
+                <input type="hidden" name="orderId" th:value="${orderInfo.id}"/>
+
+                <label for="orderStatus"><strong>Cập nhật trạng thái đơn hàng: </strong></label>
+                <select name="status" id="orderStatus" style="padding: 5px; margin: 0 10px;">
+                    <option value="NEW" th:selected="${orderInfo.status == 'NEW'}">Chưa xác nhận</option>
+                    <option value="CONFIRMED" th:selected="${orderInfo.status == 'CONFIRMED'}">Đã xác nhận</option>
+                    <option value="SHIPPING" th:selected="${orderInfo.status == 'SHIPPING'}">Đang giao hàng</option>
+                    <option value="RECEIVED" th:selected="${orderInfo.status == 'RECEIVED'}">Đã nhận hàng</option>
+                </select>
+
+                <button type="submit" style="padding: 6px 15px; background: #333; color: white; border: none; cursor: pointer;">
+                    Cập nhật
+                </button>
+            </form>
+        </div>
+
+        <!-- TRƯỜNG HỢP 2: Dành cho EMPLOYEE (Chỉ được xem chữ hiển thị) -->
+        <div sec:authorize="hasRole('ROLE_EMPLOYEE')">
+            <strong>Trạng thái đơn hàng: </strong>
+            <span style="font-weight: bold; color: blue; font-size: 1.1em;"
+                  th:text="${orderInfo.status == 'NEW' ? 'Chưa xác nhận' :
+                                (orderInfo.status == 'CONFIRMED' ? 'Đã xác nhận' :
+                                (orderInfo.status == 'SHIPPING' ? 'Đang giao hàng' : 'Đã nhận hàng'))}">
+                </span>
+
+        </div>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <a th:href="@{/admin/orderList}">← Quay lại danh sách đơn hàng</a>
+    </div>
 </div>
-<br/>
-<table border= "1" style= "width:100%">
-    <tr>
-        <th>Product Code</th>
-        <th>Product Name</th>
-        <th>Quantity</th>
-        <th>Price</th>
-        <th>Amount</th>
-    </tr>
-    <tr th:each=
-                "orderDetailInfo : ${orderInfo.details}">
-        <td th:utext="${orderDetailInfo.productCode}"></td>
 
-                    <td th:utext= "${orderDetailInfo.productName}"></td>
-                    <td th:utext="${orderDetailInfo.quanity}"></td>
-                    <td th:utext= "${#numbers.formatDecimal(orderDetailInfo.price,3,2,
-'COMMA')}"></td>
-        <td th:utext= "${#numbers.formatDecimal(orderDetailInfo.amount,3,2,
-'COMMA')}"></td>
-                    </tr>
-</table>
-
-
-
-
-<th:block th:insert=
-                  "/_footer"></th:block>
+<th:block th:replace="~{_footer}"></th:block>
 </body>
 </html>

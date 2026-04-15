@@ -19,7 +19,7 @@ public class OrderDetailInfo {
         this.amount = amount;
     }
 
-    // Getter & Setter cho tất cả các trường trên
+
     public String getId() {
         return id;
     }

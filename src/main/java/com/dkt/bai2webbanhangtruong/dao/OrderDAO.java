@@ -27,7 +27,6 @@ public class OrderDAO {
     private final OrderDetailRepository orderDetailRepository;
     private final ProductRepository productRepository;
 
-    // Sửa lỗi cú pháp Constructor ở đây
     public OrderDAO(OrderRepository orderRepository,
                     OrderDetailRepository orderDetailRepository,
                     ProductRepository productRepository) {
@@ -36,18 +35,27 @@ public class OrderDAO {
         this.productRepository = productRepository;
     }
 
-    public void saveOrder(CartInfo cartInfo) {
+    public void saveOrder(CartInfo cartInfo, String userName) {
         Order order = new Order();
         order.setOrderDate(new Date());
         order.setAmount(cartInfo.getAmountTotal());
+        order.setUserName(userName);
+        order.setStatus("NEW");
 
         CustomerInfo cust = cartInfo.getCustomerInfo();
-        if (cust != null) {
+        if (cust != null && cust.getName() != null && !cust.getName().isEmpty()) {
             order.setCustomerName(cust.getName());
             order.setCustomerEmail(cust.getEmail());
             order.setCustomerPhone(cust.getPhone());
             order.setCustomerAddress(cust.getAddress());
+        } else {
+
+            order.setCustomerName(userName);
+            order.setCustomerEmail("Chưa cập nhật");
+            order.setCustomerAddress("Tại quầy/Hệ thống");
+            order.setCustomerPhone("N/A");
         }
+
 
         order = orderRepository.save(order);
         order.setOrderNum(order.getId().intValue());
@@ -57,8 +65,17 @@ public class OrderDAO {
             OrderDetail detail = new OrderDetail();
             detail.setOrderId(order.getId());
 
+
             Product product = productRepository.findByCode(line.getProductInfo().getCode());
             if (product != null) {
+
+                int newStock = product.getStock() - line.getQuantity();
+                if (newStock < 0) {
+                    throw new RuntimeException("Sản phẩm " + product.getName() + " đã hết hàng!");
+                }
+                product.setStock(newStock);
+                productRepository.save(product); // Cập nhật kho
+
                 detail.setProductId(product.getId());
             }
 
@@ -71,15 +88,24 @@ public class OrderDAO {
         cartInfo.setOrderNum(order.getOrderNum());
     }
 
+
     public OrderInfo getOrderInfo(Long orderId) {
-        // findById là hàm có sẵn của JpaRepository
         Order order = orderRepository.findById(orderId).orElse(null);
         if (order == null) return null;
 
-        return new OrderInfo(order.getId().toString(), order.getOrderDate(), order.getOrderNum(),
-                order.getAmount(), order.getCustomerName(), order.getCustomerAddress(),
-                order.getCustomerEmail(), order.getCustomerPhone());
+        return new OrderInfo(
+                order.getId().toString(),
+                order.getOrderDate(),
+                order.getOrderNum(),
+                order.getAmount(),
+                order.getCustomerName(),
+                order.getCustomerAddress(),
+                order.getCustomerEmail(),
+                order.getCustomerPhone(),
+                order.getStatus()
+        );
     }
+
 
     public List<OrderDetailInfo> listOrderDetailInfos(Long orderId) {
         List<OrderDetail> details = orderDetailRepository.findByOrderId(orderId);
@@ -94,14 +120,32 @@ public class OrderDAO {
         }).collect(Collectors.toList());
     }
 
+
     public PaginationResult<OrderInfo> listOrderInfo(int page, int maxResult, int maxNavigationPage) {
         Pageable pageable = PageRequest.of(page - 1, maxResult, Sort.by("orderDate").descending());
         Page<Order> result = orderRepository.findAll(pageable);
 
-        Page<OrderInfo> infoPage = result.map(o -> new OrderInfo(o.getId().toString(), o.getOrderDate(),
-                o.getOrderNum(), o.getAmount(), o.getCustomerName(), o.getCustomerAddress(),
-                o.getCustomerEmail(), o.getCustomerPhone()));
+        Page<OrderInfo> infoPage = result.map(o -> new OrderInfo(
+                o.getId().toString(),
+                o.getOrderDate(),
+                o.getOrderNum(),
+                o.getAmount(),
+                o.getCustomerName(),
+                o.getCustomerAddress(),
+                o.getCustomerEmail(),
+                o.getCustomerPhone(),
+                o.getStatus()
+        ));
 
         return new PaginationResult<>(infoPage, maxNavigationPage);
+    }
+
+
+    public void updateStatus(Long orderId, String status) {
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if (order != null) {
+            order.setStatus(status);
+            orderRepository.save(order);
+        }
     }
 }

@@ -1,33 +1,76 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Sản phẩm - Dkt Shop</title>
+    <title>Danh sách sản phẩm - Dkt Shop</title>
     <link rel="stylesheet" type="text/css" th:href="@{/styles.css}">
 </head>
 <body>
-<th:block th:insert="~{_header}"></th:block>
+<!-- Nhúng Header và Menu -->
+<th:block th:replace="~{_header}"></th:block>
 <th:block th:replace="~{_menu}"></th:block>
+
 <div class="page-title">Danh sách sản phẩm</div>
 
-<div class="product-preview-container" th:each="prodInfo : ${paginationProducts.list}">
-    <ul>
-        <li><img class="product-image" th:src="@{|/productImage?code=${prodInfo.code}|}" /></li>
-        <li>Code: <span th:utext="${prodInfo.code}"></span></li>
-        <li>Name: <span th:utext="${prodInfo.name}"></span></li>
-        <li>Price: <span th:utext="${#numbers.formatDecimal(prodInfo.price,3,0,'COMMA')}"></span> VNĐ</li>
-        <li><a th:href="@{|/buyProduct?code=${prodInfo.code}|}">Mua ngay</a></li>
-        <li sec:authorize="hasRole('ROLE_MANAGER')">
-            <a style="color:red" th:href="@{|/admin/product?code=${prodInfo.code}|}">Sửa sản phẩm</a>
-        </li>
-    </ul>
+<!-- Vùng hiển thị danh sách sản phẩm -->
+<div class="container">
+    <div class="product-preview-container" th:each="prodInfo : ${paginationProducts.list}">
+        <ul>
+            <!-- Hình ảnh sản phẩm -->
+            <li>
+                <img class="product-image" th:src="@{|/productImage?code=${prodInfo.code}|}" alt="Product Image" />
+            </li>
+
+            <!-- Thông tin chi tiết -->
+            <li>Mã SP: <span th:text="${prodInfo.code}"></span></li>
+            <li style="font-weight: bold; font-size: 1.1em;">
+                Tên: <span th:text="${prodInfo.name}"></span>
+            </li>
+            <li>Giá: <b style="color: blue;" th:text="${#numbers.formatDecimal(prodInfo.price, 1, 0, 'COMMA')}"></b> VNĐ</li>
+
+            <!-- HIỂN THỊ HÀNG TỒN KHO -->
+            <li>Tình trạng:
+                <span th:if="${prodInfo.stock > 0}">Kho còn <b th:text="${prodInfo.stock}"></b> sản phẩm</span>
+                <span th:if="${prodInfo.stock <= 0}" style="color: red; font-weight: bold;">Hết hàng</span>
+            </li>
+
+            <br/>
+
+            <!-- NÚT MUA HÀNG (Dành cho khách) -->
+            <li>
+                <a th:if="${prodInfo.stock > 0}" class="btn-buy"
+                   th:href="@{|/buyProduct?code=${prodInfo.code}|}"
+                   style="padding: 5px 10px; background: #28a745; color: white; text-decoration: none; border-radius: 3px;">
+                    Mua ngay
+                </a>
+            </li>
+
+            <li sec:authorize="hasAuthority('ROLE_MANAGER')" style="margin-top: 10px; list-style: none;">
+                <a th:href="@{/admin/productEdit(code=${prodInfo.code})}"
+                   style="color:red; font-weight: bold;">
+                    Sửa sản phẩm
+                </a>
+            </li>
+        </ul>
+    </div>
 </div>
 
-<br/>
-<div class="menu-container" th:if="${paginationProducts.totalPages > 1}">
+<div style="clear: both;"></div>
+
+<!-- Hệ thống phân trang -->
+<div class="menu-container" th:if="${paginationProducts.totalPages > 1}" style="text-align: center; margin-top: 30px;">
     <th:block th:each="page : ${paginationProducts.navigationPages}">
-        <a th:href="@{|/productList?page=${page}|}" th:if="${page != -1}" th:utext="${page}"></a>
-        <span th:if="${page == -1}"> ... </span>
+
+        <a th:if="${page != -1}"
+           th:href="@{|/productList?page=${page}|}"
+           th:text="${page}"
+           th:style="${page == paginationProducts.currentPage} ? 'margin: 0 5px; padding: 8px 15px; background: #333; color: white; font-weight: bold;' : 'margin: 0 5px; padding: 8px 15px; border: 1px solid #ccc; color: black; text-decoration: none;'">
+        </a>
+
+        <span th:if="${page == -1}" style="margin: 0 5px;"> ... </span>
+
     </th:block>
 </div>
 

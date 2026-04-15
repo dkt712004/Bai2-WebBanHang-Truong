@@ -11,12 +11,14 @@ public class OrderInfo {
     private String customerEmail;
     private String customerPhone;
     private List<OrderDetailInfo> details;
-    public OrderInfo() {}
+    private String status;
     public OrderInfo(String id, Date orderDate, int orderNum, double amount,
-                     String customerName, String customerAddress, String customerEmail, String customerPhone) {
+                     String customerName, String customerAddress, String customerEmail,
+                     String customerPhone, String status) {
         this.id = id; this.orderDate = orderDate; this.orderNum = orderNum; this.amount = amount;
         this.customerName = customerName; this.customerAddress = customerAddress;
         this.customerEmail = customerEmail; this.customerPhone = customerPhone;
+        this.status = status;
     }
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
@@ -36,4 +38,6 @@ public class OrderInfo {
     public void setCustomerPhone(String customerPhone) { this.customerPhone = customerPhone; }
     public List<OrderDetailInfo> getDetails() { return details; }
     public void setDetails(List<OrderDetailInfo> details) { this.details = details; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 }

@@ -1,0 +1,12 @@
+<div class="container">
+    <h1 th:text="${product.name}"></h1>
+    <img th:src="@{|/productImage?code=${product.code}|}" width="300"/>
+    <p>Mã: <span th:text="${product.code}"></span></p>
+    <p>Giá: <b th:text="${#numbers.formatDecimal(product.price, 1, 0, 'COMMA')}"></b> VNĐ</p>
+    <p>Kho còn: <span th:text="${product.stock}"></span> sản phẩm</p>
+
+    <form th:if="${product.stock > 0}">
+        <a th:href="@{|/buyProduct?code=${product.code}|}" class="btn-buy">Thêm vào giỏ hàng</a>
+    </form>
+    <p th:if="${product.stock <= 0}" style="color:red">Hết hàng</p>
+</div>

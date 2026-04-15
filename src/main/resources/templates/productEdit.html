@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Sửa sản phẩm</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/styles.css}">
+</head>
+<body>
+<th:block th:replace="~{_header}"></th:block>
+<th:block th:replace="~{_menu}"></th:block>
+
+<div class="page-title">
+    <h1>CHỈNH SỬA SẢN PHẨM: <span th:text="${productForm.code}" style="color:red"></span></h1>
+</div>
+
+<div class="container" style="background: #fdfdfd; padding: 25px; border: 1px solid #ddd;">
+    <!-- CHÚ Ý DÒNG NÀY: action phải là /admin/productEdit -->
+    <form th:object="${productForm}" th:action="@{/admin/productEdit}" method="POST" enctype="multipart/form-data">
+
+        <input type="hidden" th:field="*{newProduct}" />
+        <input type="hidden" th:field="*{code}" />
+
+        <table style="width: 100%; border-spacing: 10px;">
+            <tr>
+                <td style="width: 150px;">Mã sản phẩm:</td>
+                <td><b th:text="*{code}" style="font-size: 1.2em; color: #333;"></b></td>
+            </tr>
+            <tr>
+                <td>Tên sản phẩm *</td>
+                <td><input type="text" th:field="*{name}" style="width: 400px; padding: 5px;" /></td>
+            </tr>
+            <tr>
+                <td>Giá bán *</td>
+                <td><input type="number" th:field="*{price}" style="padding: 5px;" /></td>
+            </tr>
+            <tr>
+                <td>Số lượng tồn *</td>
+                <td><input type="number" th:field="*{stock}" style="padding: 5px;" /></td>
+            </tr>
+            <tr>
+                <td>Ảnh hiện tại:</td>
+                <td><img th:src="@{|/productImage?code=${productForm.code}|}" width="120" style="border: 1px solid #ccc; padding: 5px;"/></td>
+            </tr>
+            <tr>
+                <td>Cập nhật ảnh mới:</td>
+                <td><input type="file" th:field="*{fileData}" /></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <br/>
+                    <!-- Nút Submit phải nằm trong thẻ Form -->
+                    <button type="submit" style="background: #007bff; color: white; padding: 10px 30px; border: none; cursor: pointer; font-weight: bold;">
+                        LƯU THAY ĐỔI
+                    </button>
+                    <a th:href="@{/productList}" style="margin-left: 15px; color: #666;">Quay lại</a>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<th:block th:replace="~{_footer}"></th:block>
+</body>
+</html>

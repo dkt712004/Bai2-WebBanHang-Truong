@@ -1,8 +1,23 @@
-<div class="menu-container" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
-    <a th:href="@{/}">Home</a>
-    <a th:href="@{/productList}">Product List</a>
-    <a th:href="@{/shoppingCart}">My Cart</a>
-    <a th:href="@{/admin/orderList}" sec:authorize="hasAnyRole('ROLE_MANAGER','ROLE_EMPLOYEE')">Order List</a>
-    <a th:href="@{/admin/product}" sec:authorize="hasRole('ROLE_MANAGER')">Create Product</a>
-    <a th:href="@{/admin/login}" sec:authorize="!isAuthenticated()">Login</a>
+<div class="menu-container"
+     xmlns:th="http://www.thymeleaf.org"
+     xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+    <a th:href="@{/}">Trang chủ</a>
+    <a th:href="@{/productList}">Sản phẩm</a>
+    <a th:href="@{/shoppingCart}">Giỏ hàng</a>
+
+    <a th:href="@{/admin/orderList}"
+       sec:authorize="hasAnyAuthority('ROLE_MANAGER', 'ROLE_EMPLOYEE')">Đơn hàng</a>
+
+    <a th:href="@{/admin/product}"
+       sec:authorize="hasAuthority('ROLE_MANAGER')">Thêm sản phẩm</a>
+
+    <!-- CHỈ HIỆN KHI CHƯA ĐĂNG NHẬP -->
+    <a th:href="@{/admin/login}" sec:authorize="isAnonymous()">Login</a>
+
+    <!-- CHỈ HIỆN KHI ĐÃ ĐĂNG NHẬP -->
+    <span sec:authorize="isAuthenticated()" style="margin-left: 10px;">
+        Chào, <b sec:authentication="name" style="color: #00ff00;"></b> |
+        <a th:href="@{/admin/logout}" style="color:red; font-weight: bold;">Logout</a>
+    </span>
 </div>

@@ -1,9 +1,9 @@
 package com.dkt.bai2webbanhangtruong.controller;
 
 import java.io.IOException;
+import java.security.Principal;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import com.dkt.bai2webbanhangtruong.dao.OrderDAO;
 import com.dkt.bai2webbanhangtruong.dao.ProductDAO;
 import com.dkt.bai2webbanhangtruong.entity.Product;
@@ -35,80 +35,67 @@ public class MainController {
     public String home() { return "index"; }
 
     @RequestMapping({ "/productList" })
-    public String listProductHandler(Model model,
-                                     @RequestParam(value = "name", defaultValue = "") String likeName,
-                                     @RequestParam(value = "page", defaultValue = "1") int page) {
-        final int maxResult = 5;
-        final int maxNavigationPage = 10;
-        PaginationResult<ProductInfo> result = productDAO.queryProducts(page, maxResult, maxNavigationPage, likeName);
+    public String listProductHandler(Model model, @RequestParam(value = "name", defaultValue = "") String likeName, @RequestParam(value = "page", defaultValue = "1") int page) {
+        PaginationResult<ProductInfo> result = productDAO.queryProducts(page, 5, 10, likeName);
         model.addAttribute("paginationProducts", result);
         return "productList";
     }
 
+    @RequestMapping(value = { "/productDetail" }, method = RequestMethod.GET)
+    public String productDetail(Model model, @RequestParam(value = "code") String code) {
+        Product product = productDAO.findProduct(code);
+        if (product == null) return "redirect:/productList";
+        model.addAttribute("product", product);
+        model.addAttribute("productInfo", new ProductInfo(product));
+        return "productDetail";
+    }
+
     @RequestMapping({ "/buyProduct" })
-    public String buyProductHandler(HttpServletRequest request,
-                                    @RequestParam(value = "code", defaultValue = "") String code) {
-        Product product = null;
-        if (code != null && !code.isEmpty()) {
-            product = productDAO.findProduct(code);
-        }
+    public String buyProductHandler(HttpServletRequest request, @RequestParam(value = "code", defaultValue = "") String code) {
+        Product product = (code != null && !code.isEmpty()) ? productDAO.findProduct(code) : null;
         if (product != null) {
             CartInfo cartInfo = Utils.getCartInSession(request);
-            ProductInfo productInfo = new ProductInfo(product);
-            cartInfo.addProduct(productInfo, 1);
+            cartInfo.addProduct(new ProductInfo(product), 1);
         }
         return "redirect:/shoppingCart";
     }
 
     @RequestMapping({ "/shoppingCartRemoveProduct" })
-    public String removeProductHandler(HttpServletRequest request,
-                                       @RequestParam(value = "code", defaultValue = "") String code) {
-        Product product = null;
-        if (code != null && !code.isEmpty()) {
-            product = productDAO.findProduct(code);
-        }
+    public String removeProductHandler(HttpServletRequest request, @RequestParam(value = "code", defaultValue = "") String code) {
+        Product product = (code != null && !code.isEmpty()) ? productDAO.findProduct(code) : null;
         if (product != null) {
-            CartInfo cartInfo = Utils.getCartInSession(request);
-            ProductInfo productInfo = new ProductInfo(product);
-            cartInfo.removeProduct(productInfo);
+            Utils.getCartInSession(request).removeProduct(new ProductInfo(product));
         }
         return "redirect:/shoppingCart";
     }
 
     @RequestMapping(value = { "/shoppingCart" }, method = RequestMethod.GET)
     public String shoppingCartHandler(HttpServletRequest request, Model model) {
-        CartInfo myCart = Utils.getCartInSession(request);
-        model.addAttribute("cartForm", myCart);
+        model.addAttribute("cartForm", Utils.getCartInSession(request));
         return "shoppingCart";
     }
 
     @RequestMapping(value = { "/shoppingCart" }, method = RequestMethod.POST)
     public String shoppingCartUpdateQty(HttpServletRequest request, @ModelAttribute("cartForm") CartInfo cartForm) {
-        CartInfo cartInfo = Utils.getCartInSession(request);
-        cartInfo.updateQuantity(cartForm);
+        Utils.getCartInSession(request).updateQuantity(cartForm);
         return "redirect:/shoppingCart";
     }
-
 
     @RequestMapping(value = { "/shoppingCartConfirmation" }, method = RequestMethod.GET)
     public String shoppingCartConfirmationReview(HttpServletRequest request, Model model) {
         CartInfo cartInfo = Utils.getCartInSession(request);
-        // Đã xóa check 'cartInfo == null' dư thừa
-        if (cartInfo.isEmpty()) {
-            return "redirect:/shoppingCart";
-        }
+        if (cartInfo.isEmpty()) return "redirect:/shoppingCart";
         model.addAttribute("myCart", cartInfo);
         return "shoppingCartConfirmation";
     }
 
     @RequestMapping(value = { "/shoppingCartConfirmation" }, method = RequestMethod.POST)
-    public String shoppingCartConfirmationSave(HttpServletRequest request) {
+    public String shoppingCartConfirmationSave(HttpServletRequest request, Principal principal) {
         CartInfo cartInfo = Utils.getCartInSession(request);
-        if (cartInfo.isEmpty()) {
-            return "redirect:/shoppingCart";
-        }
+        if (cartInfo.isEmpty()) return "redirect:/shoppingCart";
+        String userName = (principal != null) ? principal.getName() : "Guest";
         try {
-            orderDAO.saveOrder(cartInfo);
+            orderDAO.saveOrder(cartInfo, userName);
         } catch (Exception e) {
             return "shoppingCartConfirmation";
         }
@@ -120,17 +107,14 @@ public class MainController {
     @RequestMapping(value = { "/shoppingCartFinalize" }, method = RequestMethod.GET)
     public String shoppingCartFinalize(HttpServletRequest request, Model model) {
         CartInfo lastOrderedCart = Utils.getLastOrderedCartInSession(request);
-        if (lastOrderedCart == null) {
-            return "redirect:/shoppingCart";
-        }
+        if (lastOrderedCart == null) return "redirect:/shoppingCart";
         model.addAttribute("lastOrderedCart", lastOrderedCart);
         return "shoppingCartFinalize";
     }
 
     @RequestMapping(value = { "/productImage" }, method = RequestMethod.GET)
     public void productImage(HttpServletResponse response, @RequestParam("code") String code) throws IOException {
-        Product product = null;
-        if (code != null) product = this.productDAO.findProduct(code);
+        Product product = productDAO.findProduct(code);
         if (product != null && product.getImage() != null) {
             response.setContentType("image/jpeg");
             response.getOutputStream().write(product.getImage());

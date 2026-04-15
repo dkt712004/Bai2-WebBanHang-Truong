@@ -1,26 +1,27 @@
 package com.dkt.bai2webbanhangtruong.service;
 
-import com.dkt.bai2webbanhangtruong.entity.Product;
-import com.dkt.bai2webbanhangtruong.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Service;
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDateTime;
 
 @Service
 public class ProductService {
 
-    @Autowired
-    private ProductRepository productRepository;
+    @PersistenceContext
+    private EntityManager entityManager; // Công cụ điều khiển DB trực tiếp
 
-    public void save(Product entity) {
-        productRepository.save(entity);
-    }
+    @Transactional
+    public boolean softDeleteByCode(String code) {
 
-    public List<Product> findAll() {
-        return productRepository.findAll();
-    }
+        String sql = "UPDATE products SET is_deleted = 1, deleted_at = ?1 WHERE code = ?2";
 
-    public Product findByCode(String code) {
-        return productRepository.findByCode(code);
+        int updatedCount = entityManager.createNativeQuery(sql)
+                .setParameter(1, LocalDateTime.now())
+                .setParameter(2, code.trim())
+                .executeUpdate();
+
+        return updatedCount > 0;
     }
 }
